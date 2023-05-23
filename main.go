@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
+	"html/template"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -20,7 +23,7 @@ type Transaction struct {
 
 func main() {
 	// Read the input file
-	filePath := "./files/example_transactions.csv"
+	filePath := "files/example_transactions.csv"
 	transactions, err := readTransactions(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -30,6 +33,19 @@ func main() {
 	totalBalance := calculateTotalBalance(transactions)
 	transactionCounts := groupTransactionsByMonth(transactions)
 	averageDebit, averageCredit := calculateAverageAmounts(transactions, transactionCounts)
+
+	// Generate the email body
+	emailBody, err := generateEmailBody(totalBalance, transactionCounts, averageDebit, averageCredit)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Send the email
+	if err := sendEmail(emailBody); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Email sent successfully!")
 }
 
 func readTransactions(filePath string) ([]Transaction, error) {
@@ -118,4 +134,62 @@ func calculateAverageAmounts(transactions []Transaction, transactionCounts map[s
 	averageCredit := creditSum / float64(creditCount)
 
 	return averageDebit, averageCredit
+}
+
+func generateEmailBody(totalBalance float64, transactionCounts map[string]int, averageDebit, averageCredit float64) (string, error) {
+	// Read the HTML template from the external file
+	templateFile := "email/email_template.html"
+	templateContent, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		return "", err
+	}
+
+	// Prepare the data for the email template
+	emailData := struct {
+		TotalBalance      float64
+		TransactionCounts map[string]int
+		AverageDebit      float64
+		AverageCredit     float64
+	}{
+		TotalBalance:      totalBalance,
+		TransactionCounts: transactionCounts,
+		AverageDebit:      averageDebit,
+		AverageCredit:     averageCredit,
+	}
+
+	// Create a new template and parse the email template content
+	tmpl := template.New("emailTemplate")
+	tmpl, err = tmpl.Parse(string(templateContent))
+	if err != nil {
+		return "", err
+	}
+
+	// Generate the email body by executing the template with the email data
+	var emailBody bytes.Buffer
+	err = tmpl.Execute(&emailBody, emailData)
+	if err != nil {
+		return "", err
+	}
+
+	return emailBody.String(), nil
+}
+
+func sendEmail(body string) error {
+	sender := os.Getenv("SENDER_MAIL")
+    password := os.Getenv("PASSWORD")
+	recipient := os.Getenv("RECIPIENT_MAIL")
+
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", sender)
+	mailer.SetHeader("To", recipient)
+	mailer.SetHeader("Subject", "Transaction Summary")
+	mailer.SetBody("text/plain", body)
+
+	dialer := gomail.NewDialer("smtp.gmail.com", 587, sender, password)
+
+	if err := dialer.DialAndSend(mailer); err != nil {
+		return err
+	}
+
+	return nil
 }

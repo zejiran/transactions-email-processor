@@ -14,7 +14,7 @@ RUN go mod download
 COPY *.go ./
 
 # Copy project assets
-COPY files/example_transactions.csv .
+COPY files files
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /transactions-email-processor
@@ -29,7 +29,13 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 WORKDIR /
 
 COPY --from=build-stage /transactions-email-processor /transactions-email-processor
+COPY --from=build-stage /app/files /files
+COPY email/dist/email_template.html email/
 
 USER nonroot:nonroot
+
+ENV SENDER_MAIL="sender@gmail.com"
+ENV PASSWORD="secret-password"
+ENV RECIPIENT_MAIL="recipient@example.com"
 
 ENTRYPOINT ["/transactions-email-processor"]
