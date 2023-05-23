@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -33,7 +32,7 @@ func main() {
 	// Calculate summary information
 	totalBalance := calculateTotalBalance(transactions)
 	transactionCounts := groupTransactionsByMonth(transactions)
-	averageDebit, averageCredit := calculateAverageAmounts(transactions, transactionCounts)
+	averageDebit, averageCredit := calculateAverageAmounts(transactions)
 
 	// Generate the email body
 	emailBody, err := generateEmailBody(totalBalance, transactionCounts, averageDebit, averageCredit)
@@ -118,7 +117,7 @@ func groupTransactionsByMonth(transactions []Transaction) map[string]int {
 	return transactionCounts
 }
 
-func calculateAverageAmounts(transactions []Transaction, transactionCounts map[string]int) (float64, float64) {
+func calculateAverageAmounts(transactions []Transaction) (float64, float64) {
 	var debitSum, creditSum float64
 	var debitCount, creditCount int
 
@@ -141,7 +140,7 @@ func calculateAverageAmounts(transactions []Transaction, transactionCounts map[s
 func generateEmailBody(totalBalance float64, transactionCounts map[string]int, averageDebit, averageCredit float64) (string, error) {
 	// Read the HTML template from the external file
 	templateFile := "email/email_template.html"
-	templateContent, err := ioutil.ReadFile(templateFile)
+	templateContent, err := os.ReadFile(templateFile)
 	if err != nil {
 		return "", err
 	}
