@@ -27,7 +27,7 @@ Make sure to replace the email addresses with your own sender and recipient addr
 3. Run the Docker container with the -v flag to mount a directory for input files:
 
 ```shell
-docker run --platform linux/x86_64 --env-file ./.env -v files:/files ghcr.io/zejiran/transactions-email-processor:master
+docker run --platform linux/x86_64 --env-file ./.env -v /<absolute-host-path>/files:/files ghcr.io/zejiran/transactions-email-processor:master
 ```
 
 The `-v` flag maps the `files` directory on the host machine to the `/files` directory in the container. This allows you to provide input files from the host machine to the container.
@@ -35,7 +35,7 @@ The `-v` flag maps the `files` directory on the host machine to the `/files` dir
 4. Alternatively, you can specify environment variables as command arguments:
 
 ```shell
-docker run --platform linux/x86_64 --env-file ./.env --env RECIPIENT_MAIL=new.recipient@example.com ghcr.io/zejiran/transactions-email-processor:master
+docker run --platform linux/x86_64 --env-file ./.env --env RECIPIENT_MAIL=new.recipient@example.com -v /<absolute-host-path>/files:/files ghcr.io/zejiran/transactions-email-processor:master
 ```
 
 ### File Format
