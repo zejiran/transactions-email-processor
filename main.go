@@ -1,1 +1,121 @@
 package main
+
+import (
+	"encoding/csv"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
+	"gopkg.in/gomail.v2"
+)
+
+type Transaction struct {
+	ID          int
+	Date        time.Time
+	Transaction float64
+}
+
+func main() {
+	// Read the input file
+	filePath := "./files/example_transactions.csv"
+	transactions, err := readTransactions(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Calculate summary information
+	totalBalance := calculateTotalBalance(transactions)
+	transactionCounts := groupTransactionsByMonth(transactions)
+	averageDebit, averageCredit := calculateAverageAmounts(transactions, transactionCounts)
+}
+
+func readTransactions(filePath string) ([]Transaction, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = 3
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var transactions []Transaction
+	for i, record := range records {
+		// Skip the header row
+		if i == 0 {
+			continue
+		}
+
+		id, err := strconv.Atoi(record[0])
+		if err != nil {
+			return nil, err
+		}
+
+		date, err := time.Parse("1/2", record[1])
+		if err != nil {
+			return nil, err
+		}
+
+		transaction, err := strconv.ParseFloat(strings.TrimPrefix(record[2], "+"), 64)
+		if err != nil {
+			return nil, err
+		}
+
+		transactions = append(transactions, Transaction{
+			ID:          id,
+			Date:        date,
+			Transaction: transaction,
+		})
+	}
+
+	return transactions, nil
+}
+
+func calculateTotalBalance(transactions []Transaction) float64 {
+	var totalBalance float64
+
+	for _, transaction := range transactions {
+		totalBalance += transaction.Transaction
+	}
+
+	return totalBalance
+}
+
+func groupTransactionsByMonth(transactions []Transaction) map[string]int {
+	transactionCounts := make(map[string]int)
+
+	for _, transaction := range transactions {
+		month := transaction.Date.Format("January")
+		transactionCounts[month]++
+	}
+
+	return transactionCounts
+}
+
+func calculateAverageAmounts(transactions []Transaction, transactionCounts map[string]int) (float64, float64) {
+	var debitSum, creditSum float64
+	var debitCount, creditCount int
+
+	for _, transaction := range transactions {
+		if transaction.Transaction < 0 {
+			debitSum += transaction.Transaction
+			debitCount++
+		} else {
+			creditSum += transaction.Transaction
+			creditCount++
+		}
+	}
+
+	averageDebit := debitSum / float64(debitCount)
+	averageCredit := creditSum / float64(creditCount)
+
+	return averageDebit, averageCredit
+}
