@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"gopkg.in/gomail.v2"
 )
 
@@ -152,10 +153,10 @@ func generateEmailBody(totalBalance float64, transactionCounts map[string]int, a
 		AverageDebit      string
 		AverageCredit     string
 	}{
-		TotalBalance:      fmt.Sprintf("$%.2f", totalBalance),
+		TotalBalance:      fmt.Sprintf("$%s", humanize.FormatFloat("#,###.##", totalBalance)),
 		TransactionCounts: transactionCounts,
-		AverageDebit:      fmt.Sprintf("$%.2f", averageDebit),
-		AverageCredit:     fmt.Sprintf("$%.2f", averageCredit),
+		AverageDebit:      fmt.Sprintf("$%s", humanize.FormatFloat("#,###.##", averageDebit)),
+		AverageCredit:     fmt.Sprintf("$%s", humanize.FormatFloat("#,###.##", averageCredit)),
 	}
 
 	// Create a new template and parse the email template content
