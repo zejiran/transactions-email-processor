@@ -70,6 +70,10 @@ Make sure to set these environment variables in the `.env` file before running t
 - `email/dist/email_template.html`: The HTML template used for generating the email body.
 - `files/example_transactions.csv`: An example input file with debit and credit transactions.
 
+### Example Received Email
+
+<img width="300" alt="example" src="https://github.com/zejiran/transactions-email-processor/assets/30379522/0eb4f923-94d9-4234-9a2f-a87e2c8b511b">
+
 ### Notes
 
 - The email sending functionality is currently configured for Gmail. If you are using a different email provider, you may need to update the SMTP server details in the `sendEmail` function in `main.go`.
