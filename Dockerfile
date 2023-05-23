@@ -13,9 +13,6 @@ RUN go mod download
 # Copy the source code
 COPY *.go ./
 
-# Copy project assets
-COPY files files
-
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /transactions-email-processor
 
@@ -29,7 +26,8 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 WORKDIR /
 
 COPY --from=build-stage /transactions-email-processor /transactions-email-processor
-COPY --from=build-stage /app/files /files
+
+# Copy project assets
 COPY email/dist/email_template.html email/
 
 USER nonroot:nonroot
