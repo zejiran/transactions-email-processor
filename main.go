@@ -37,7 +37,8 @@ func main() {
 	// Generate the email body
 	emailBody, err := generateEmailBody(totalBalance, transactionCounts, averageDebit, averageCredit)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error generating email body:", err)
+		return
 	}
 
 	// Send the email
@@ -146,15 +147,15 @@ func generateEmailBody(totalBalance float64, transactionCounts map[string]int, a
 
 	// Prepare the data for the email template
 	emailData := struct {
-		TotalBalance      float64
+		TotalBalance      string
 		TransactionCounts map[string]int
-		AverageDebit      float64
-		AverageCredit     float64
+		AverageDebit      string
+		AverageCredit     string
 	}{
-		TotalBalance:      totalBalance,
+		TotalBalance:      fmt.Sprintf("$%.2f", totalBalance),
 		TransactionCounts: transactionCounts,
-		AverageDebit:      averageDebit,
-		AverageCredit:     averageCredit,
+		AverageDebit:      fmt.Sprintf("$%.2f", averageDebit),
+		AverageCredit:     fmt.Sprintf("$%.2f", averageCredit),
 	}
 
 	// Create a new template and parse the email template content
@@ -176,14 +177,14 @@ func generateEmailBody(totalBalance float64, transactionCounts map[string]int, a
 
 func sendEmail(body string) error {
 	sender := os.Getenv("SENDER_MAIL")
-    password := os.Getenv("PASSWORD")
+	password := os.Getenv("PASSWORD")
 	recipient := os.Getenv("RECIPIENT_MAIL")
 
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", sender)
 	mailer.SetHeader("To", recipient)
 	mailer.SetHeader("Subject", "Transaction Summary")
-	mailer.SetBody("text/plain", body)
+	mailer.SetBody("text/html", body)
 
 	dialer := gomail.NewDialer("smtp.gmail.com", 587, sender, password)
 
