@@ -1,0 +1,217 @@
+<heml>
+
+    <head>
+        <subject>Transaction Summary Email</subject>
+
+        <!-- <preview>
+          Here you can add an email preview for certain clients like Gmail.
+        </preview> -->
+
+        <!-- TODO: Add the following to the exported html file for preventing zero height
+        <style type="text/css">
+          html {
+            min-height: 600px;
+          }
+        ... -->
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+            body {
+                background-color: #f3f3f3;
+                padding: 2% 0 2% 1%;
+            }
+
+            container {
+                text-align: center;
+                background-color: white;
+            }
+
+            .default-row {
+                margin: 40px 3%;
+            }
+
+            .logo {
+                width: 60%;
+                margin: auto;
+                padding-top: 40px;
+            }
+
+            h1 {
+                font-family: 'Roboto', sans-serif;
+                font-size: 27px;
+                color: #2a2a2a;
+            }
+
+            h2 {
+                font-family: 'Roboto', sans-serif;
+                font-size: 22px;
+                font-weight: 350;
+            }
+
+            h2 {
+                font-family: 'Roboto', sans-serif;
+            }
+
+            .regular-text {
+                font-family: 'Roboto', sans-serif;
+                font-size: 15px;
+            }
+
+            .mail-link {
+                color: #747474;
+            }
+
+            .small-text {
+                font-family: 'Roboto', sans-serif;
+                font-size: 13px;
+                line-height: 20px;
+                color: #747474;
+            }
+
+            ul {
+                list-style-type: none;
+            }
+
+            button {
+                background: #191921;
+                border-radius: 10px;
+                font-family: 'Roboto', sans-serif;
+                color: #FFFFFF;
+                padding: 14px 45px;
+            }
+
+            #footer {
+                width: 170px;
+                margin: 0 auto 24px;
+            }
+
+            .footer-icon {
+                width: 10px;
+                display: inline;
+                padding: 0 1px;
+            }
+
+            @media only screen and (max-width: 615px) and (max-device-width: 615px) {
+                #footer {
+                    width: 100% !important;
+                    padding-left: 9% !important;
+                }
+            }
+
+            @media only screen and (max-width: 415px) and (max-device-width: 415px) {
+                #footer {
+                    width: 100% !important;
+                    padding-left: 8% !important;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <container>
+            <!--Rows are useful to separate your columns into sections-->
+            <row class="default-row">
+                <column>
+                    <img class="logo"
+                        src="https://github.com/zejiran/transactions-email-processor/blob/master/email/assets/images/stori-logo.svg?raw=true" />
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <h1>Transaction Summary</h1>
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <h3>Transaction count by month</h3>
+                    <ul class="regular-text">
+                        {{ range $month, $count := .TransactionCounts }}
+                        <li>Number of transactions in {{ $month }}: {{ $count }}</li>
+                        {{ end }}
+                    </ul>
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <h3>Average transaction amount</h3>
+                    <p class="regular-text">Average debit amount: {{ .AverageDebit }}</p>
+                    <p class="regular-text">Average credit amount: {{ .AverageCredit }}</p>
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <h3>Total balance</h3>
+                    <p class="regular-text">Your general balance is {{ .TotalBalance }}</p>
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <button href="https://www.storicard.com/">View more details</button>
+                </column>
+            </row>
+
+            <row class="default-row">
+                <column>
+                    <p class="small-text" style="margin: 25px 25% 0;">
+                        <img class="footer-icon"
+                            src="https://github.com/zejiran/email-template/blob/main/assets/icons/code.png?raw=true">
+                        made with
+                        <img class="footer-icon"
+                            src="https://github.com/zejiran/email-template/blob/main/assets/icons/heart.png?raw=true">
+                        in Colombia
+                    </p>
+                    <p class="small-text">If you have any questions, write me on
+                        <a class="mail-link" href="https://t.me/juanszalegria">Telegram</a>
+                    </p>
+                </column>
+            </row>
+
+            <row id="footer">
+                <!--TODO: add social media links-->
+                <column large="5" small="2">
+                    <p>
+                        <a href=""><img heml-ignore
+                                src="https://github.com/zejiran/email-template/blob/main/assets/icons/linkedin.png?raw=true"
+                                width="30px"></a>
+                    </p>
+                </column>
+                <column large="5" small="2">
+                    <p>
+                        <a href=""><img heml-ignore
+                                src="https://github.com/zejiran/email-template/blob/main/assets/icons/facebook.png?raw=true"
+                                width="30px"></a>
+                    </p>
+                </column>
+                <column large="5" small="2">
+                    <p>
+                        <a href=""><img heml-ignore
+                                src="https://github.com/zejiran/email-template/blob/main/assets/icons/youtube.png?raw=true"
+                                width="30px"></a>
+                    </p>
+                </column>
+                <column large="5" small="2">
+                    <p>
+                        <a href=""><img heml-ignore
+                                src="https://github.com/zejiran/email-template/blob/main/assets/icons/twitter.png?raw=true"
+                                width="30px"></a>
+                    </p>
+                </column>
+                <column large="5" small="2">
+                    <p>
+                        <a href=""><img heml-ignore
+                                src="https://github.com/zejiran/email-template/blob/main/assets/icons/instagram.png?raw=true"
+                                width="30px"></a>
+                    </p>
+                </column>
+            </row>
+
+            <div style="padding-top: 50px"></div>
+        </container>
+    </body>
+</heml>
